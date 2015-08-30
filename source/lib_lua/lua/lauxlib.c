@@ -565,6 +565,19 @@ LUALIB_API int luaL_loadfile (lua_State *L, const char *filename) {
     if (lf.f == NULL) return errfile(L, "open", fnameindex);
   }
   c = getc(lf.f);
+
+  if (c == 0xef) {
+    if (getc(lf.f) == 0xbb && getc(lf.f) == 0xbf) {
+      /* do nothing, we've skipped the BOM and just continue with normal processing */
+    } else {
+     /* wasn't the UTF8 BOM, so reset everything again */
+      fclose(lf.f);
+      lf.f = fopen(filename, "r");  /* reopen */
+      if (lf.f == NULL) return errfile(L, "open", fnameindex); /* unable to reopen file */
+    }
+    c = getc(lf.f);
+  }
+
   if (c == '#') {  /* Unix exec. file? */
     lf.extraline = 1;
     while ((c = getc(lf.f)) != EOF && c != '\n') ;  /* skip first line */

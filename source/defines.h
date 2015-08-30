@@ -33,7 +33,7 @@ GNU General Public License for more details.
 
 #define AHK_NAME "AutoHotkey"
 #include "ahkversion.h"
-#define AHK_WEBSITE "http://ahkscript.org"
+#define AHK_WEBSITE "https://github.com/cpascal/LuaAutoHotkey"
 
 #define T_AHK_NAME			_T(AHK_NAME)
 #define T_AHK_VERSION		_T(AHK_VERSION)
@@ -47,11 +47,11 @@ GNU General Public License for more details.
 // MSDN: "Because window classes are process specific, window class names need to be unique only within
 // the same process. Also, because class names occupy space in the system's private atom table, you
 // should keep class name strings as short a possible:
-#define WINDOW_CLASS_MAIN _T("AutoHotkey")
-#define WINDOW_CLASS_SPLASH _T("AutoHotkey2")
-#define WINDOW_CLASS_GUI _T("AutoHotkeyGUI") // There's a section in Script::Edit() that relies on these all starting with "AutoHotkey".
+#define WINDOW_CLASS_MAIN _T("LuaAutoHotkey")
+#define WINDOW_CLASS_SPLASH _T("LuaAutoHotkey2")
+#define WINDOW_CLASS_GUI _T("LuaAutoHotkeyGUI") // There's a section in Script::Edit() that relies on these all starting with "AutoHotkey".
 
-#define EXT_AUTOHOTKEY _T(".ahk")
+#define EXT_AUTOHOTKEY _T(".lua")
 
 // AutoIt2 supports lines up to 16384 characters long, and we want to be able to do so too
 // so that really long lines from aut2 scripts, such as a chain of IF commands, can be

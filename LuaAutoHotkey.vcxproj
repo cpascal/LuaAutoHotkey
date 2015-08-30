@@ -312,6 +312,14 @@
     <ResourceCompile Include="source\resources\AutoHotkey.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="source\lib_lua\lib_lua.vcxproj">
+      <Project>{e1ae5405-650c-4a72-9863-f5c840d29ea8}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
     <ProjectReference Include="source\lib_pcre\lib_pcre.vcxproj">
       <Project>{39037993-9571-4DF2-8E39-CD2909043574}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

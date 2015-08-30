@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 AutoHotkey
 
 Copyright 2003-2009 Chris Mallett (support@autohotkey.com)
@@ -1024,8 +1024,8 @@ ResultType Line::Transform(LPTSTR aCmd, LPTSTR aValue1, LPTSTR aValue2)
 		// It's possible that using just the &#number convention (e.g. &#128 through &#255;) would be
 		// more appropriate for some users, but that mode can be added in the future if it is ever
 		// needed (by passing a mode setting for aValue2):
-		// €‚ƒ„…†‡ˆ‰Š‹Œ‘’“”•–—˜™š›œŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿
-		// ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ
+		// Â€ê±—ê¹‚ë€Šë‡ ë·ë•¶ëœ‹ë£“ëª¤ë±®ë¸­ë¿•ì†ì«ì”†ìœã€ï¼„â…µã¤Ã¸ã‚¬??êµ‰ë‚«ë…ë ‡ë­”ë»¤ìŠ­?
+		// ì’ì© ì»µíŒí›”å¢¾å‹å¦ä»Šï¤¿æ¡è™œå¦¹è†Šè¦†æ³—è¤»æ ’é´¨é‰›åƒ¥å¹½æ—¥å…¨çŒè†£é€®æ“¢ç¥¨äº¨æ¶?
 		static const LPTSTR sHtml[] = { // v1.0.40.02: Removed leading '&' and trailing ';' to reduce code size.
 #ifndef UNICODE
 			  _T("euro"), _T("#129"), _T("sbquo"), _T("fnof"), _T("bdquo"), _T("hellip"), _T("dagger"), _T("Dagger")
