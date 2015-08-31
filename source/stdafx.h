@@ -44,6 +44,17 @@ GNU General Public License for more details.
 	#include "config.h" // compile-time configurations
 	#include "debug.h"
 
+	#ifdef __cplusplus
+	extern "C"
+	{
+	#endif
+		#include "lib_lua/lua/lua.h"
+		#include "lib_lua/lua/lualib.h"
+		#include "lib_lua/lua/lauxlib.h"
+	#ifdef __cplusplus
+	};
+	#endif
+
 	// C RunTime Header Files
 	#include <stdio.h>
 	#include <stdlib.h>
