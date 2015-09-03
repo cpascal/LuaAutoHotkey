@@ -553,6 +553,7 @@ Action g_act[] =
 	, {_T("FileEncoding"), 0, 1, 1, NULL}
 
 	, {_T("#If"), 0, 1, 1, {1, 0}}
+	, {_T("RunLuaFile"), 1, 1, NULL}
 };
 // Below is the most maintainable way to determine the actual count?
 // Due to C++ lang. restrictions, can't easily make this a const because constants

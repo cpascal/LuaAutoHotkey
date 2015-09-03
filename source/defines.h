@@ -423,6 +423,7 @@ enum enum_act {
 , ACT_SHUTDOWN
 , ACT_FILEENCODING
 , ACT_HOTKEY_IF
+, ACT_RUNLUAFILE
 // Make these the last ones before the count so they will be less often processed.  This helps
 // performance because this one doesn't actually have a keyword so will never result
 // in a match anyway.  UPDATE: No longer used because Run/RunWait is now required, which greatly

@@ -54,7 +54,7 @@ int WINAPI _tWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
 #ifndef AUTOHOTKEYSC
 	#ifdef _DEBUG
-		TCHAR *script_filespec = _T("Test\\Test.lua");
+		TCHAR *script_filespec = _T("Test\\Test.ahk");
 	#else
 		TCHAR *script_filespec = NULL; // Set default as "unspecified/omitted".
 	#endif

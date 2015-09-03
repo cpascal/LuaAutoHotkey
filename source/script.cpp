@@ -15220,11 +15220,23 @@ __forceinline ResultType Line::Perform() // As of 2/9/2009, __forceinline() redu
 		return Util_Shutdown(ArgToInt(1)) ? OK : FAIL; // Range of ARG1 is not validated in case other values are supported in the future.
 
 	case ACT_FILEENCODING:
+		{
 		UINT new_encoding = ConvertFileEncoding(ARG1);
 		if (new_encoding == -1)
 			return LineError(ERR_PARAM1_INVALID, FAIL, ARG1); // Probably a variable, otherwise load-time validation would've caught it.
 		g.Encoding = new_encoding;
 		return OK;
+		}
+	case ACT_RUNLUAFILE:
+		{
+			TCHAR tszXX[256];
+			::GetCurrentDirectory(255, tszXX);
+		CStringCharFromWChar strFilename( ARG1 );
+		lua_State* L = luaL_newstate();
+		luaL_openlibs(L);
+		luaL_dofile(L, strFilename);
+		return OK;
+		}
 	} // switch()
 
 	// Since above didn't return, this line's mActionType isn't handled here,
