@@ -22,6 +22,7 @@ GNU General Public License for more details.
 #include "window.h" // for a lot of things
 #include "application.h" // for MsgSleep()
 #include "TextIO.h"
+#include "lua_glue.h"
 
 // Globals that are for only this module:
 #define MAX_COMMENT_FLAG_LENGTH 15
@@ -15234,6 +15235,7 @@ __forceinline ResultType Line::Perform() // As of 2/9/2009, __forceinline() redu
 		CStringCharFromWChar strFilename( ARG1 );
 		lua_State* L = luaL_newstate();
 		luaL_openlibs(L);
+		lua_registerAhkfunctions(L);
 		luaL_dofile(L, strFilename);
 		return OK;
 		}
