@@ -244,4 +244,7 @@
       <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="temp\AutoHotkey.exe.manifest" />
+  </ItemGroup>
 </Project>

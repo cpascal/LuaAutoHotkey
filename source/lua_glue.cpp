@@ -3,6 +3,12 @@
 #include "globaldata.h"
 #include "window.h"
 #include "application.h"
+#include "script.h"
+
+extern "C"
+{
+	int luaopen_cinvoke_lua(lua_State *l);
+};
 
 #define LUA_ARG_INT(name, num)	\
 	int n##name = lua_tointeger(L, num);
@@ -15,23 +21,6 @@
 	const char* sz##name = lua_tostring(L, n); \
 	CStringTCharFromUTF8 a##name( sz##name ); \
 	LPTSTR tsz##name = const_cast<LPTSTR>( (LPCTSTR) a##name );
-
-int lua_BlockInput(lua_State* L)
-{
-	bool bEnable = lua_toboolean(L, 1);
-	g_BlockInput = bEnable;
-	// Must be running Win98/2000+ for this function to be successful.
-	// We must dynamically load the function to retain compatibility with Win95 (program won't launch
-	// at all otherwise).
-	typedef void (CALLBACK *BlockInput)(BOOL);
-	static BlockInput lpfnDLLProc = (BlockInput)GetProcAddress(GetModuleHandle(_T("user32")), "BlockInput");
-	// Always turn input ON/OFF even if g_BlockInput says its already in the right state.  This is because
-	// BlockInput can be externally and undetectably disabled, e.g. if the user presses Ctrl-Alt-Del:
-	if (lpfnDLLProc)
-		(*lpfnDLLProc)(bEnable ? TRUE : FALSE);
-	lua_pushboolean(L, true);
-	return 1;
-}
 
 HWND DetermineTargetWindow(LPCTSTR aTitle, LPCTSTR aText, LPCTSTR aExcludeTitle, LPCTSTR aExcludeText)
 {
@@ -52,6 +41,70 @@ HWND DetermineTargetWindow(LPCTSTR aTitle, LPCTSTR aText, LPCTSTR aExcludeTitle,
 	else // Use the "last found" window.
 		target_window = GetValidLastUsedWindow(*g);
 	return target_window;
+}
+
+int lua_BlockInput(lua_State* L)
+{
+	bool bEnable = lua_toboolean(L, 1);
+	g_BlockInput = bEnable;
+	// Must be running Win98/2000+ for this function to be successful.
+	// We must dynamically load the function to retain compatibility with Win95 (program won't launch
+	// at all otherwise).
+	typedef void (CALLBACK *BlockInput)(BOOL);
+	static BlockInput lpfnDLLProc = (BlockInput)GetProcAddress(GetModuleHandle(_T("user32")), "BlockInput");
+	// Always turn input ON/OFF even if g_BlockInput says its already in the right state.  This is because
+	// BlockInput can be externally and undetectably disabled, e.g. if the user presses Ctrl-Alt-Del:
+	if (lpfnDLLProc)
+		(*lpfnDLLProc)(bEnable ? TRUE : FALSE);
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+int lua_Click(lua_State* L)
+{
+	LUA_ARG_STRING( Options, 1 );
+
+	ResultType ret = PerformClick( tszOptions );
+	lua_pushinteger(L, (int) ret);
+	return 1;
+}
+
+int lua_CoordMode(lua_State* L)
+{
+	LUA_ARG_STRING( ARG1, 1 );
+	LUA_ARG_STRING( ARG2, 2 );
+
+	lua_settop(L, 0);
+
+	CoordModeType mode = Line::ConvertCoordMode(tszARG2);
+	CoordModeType shift = Line::ConvertCoordModeCmd(tszARG1);
+	if (shift != -1 && mode != -1) // Compare directly to -1 because unsigned.
+		g->CoordMode = (g->CoordMode & ~(COORD_MODE_MASK << shift)) | (mode << shift);
+	//else too rare to report an error, since load-time validation normally catches it.
+
+	lua_pushinteger(L, OK);
+	return 1;
+}
+
+int lua_ImageSearch(lua_State* L)
+{
+	LUA_ARG_INT( Left, 1 );
+	LUA_ARG_INT( Top, 2 );
+	LUA_ARG_INT( Right, 3 );
+	LUA_ARG_INT( Bottom, 4 );
+	LUA_ARG_STRING( ImageFileName, 5 );
+
+	lua_settop(L, 0);
+
+	Line cLine;
+	ResultType result = cLine.ImageSearch( nLeft, nTop, nRight, nBottom, tszImageFileName );
+
+	Var *output_var_x = Line::sArgVar[0];
+	Var *output_var_y = Line::sArgVar[1];
+
+	lua_pushinteger(L, (int) output_var_x->ToInt64(TRUE) );
+	lua_pushinteger(L, (int) output_var_y->ToInt64(TRUE) );
+	return 2;
 }
 
 int lua_WinGetPos(lua_State* L)
@@ -94,6 +147,22 @@ int lua_Gui(lua_State* L)
 	return 1;
 }
 
+int lua_Process(lua_State* L)
+{
+	LUA_ARG_STRING( Cmd, 1 );
+	LUA_ARG_STRING( Process, 2 );
+	LUA_ARG_STRING( Param3, 3 );
+
+	lua_settop(L, 0);
+
+	Line cLine;
+	ResultType result = cLine.ScriptProcess( tszCmd, tszProcess, tszParam3 );
+
+	lua_pushinteger(L, result);
+	return 1;
+}
+
+
 int lua_Sleep(lua_State* L)
 {
 	// Only support 32-bit values for this command, since it seems unlikely anyone would to have
@@ -114,21 +183,10 @@ int lua_Sleep(lua_State* L)
 	return 1;
 }
 
-bool lua_registerAhkfunctions(lua_State* L)
-{
-	lua_register(L, "BlockInput", lua_BlockInput);
-	lua_register(L, "Gui", lua_Gui);
-	lua_register(L, "Sleep", lua_Sleep);
-	lua_register(L, "WinGetPos", lua_WinGetPos);
-
-	return true;
-}
-
 /*
 lua_registerAhkFunction(ByRef l)
 {
    lua_register(l, "AutoTrim", RegisterCallback("AutoTrim","C"))
-   lua_register(l, "Click", RegisterCallback("Click","C"))
    lua_register(l, "ClipWait", RegisterCallback("ClipWait","C"))
    lua_register(l, "Control", RegisterCallback("Control","C"))
    lua_register(l, "ControlClick", RegisterCallback("ControlClick","C"))
@@ -328,15 +386,6 @@ BlockInput(L)
    return 0
 }
 
-Click(L)
-{
-   arg1 := lua_tostring(L, 1)
-
-   Click %arg1%
-
-   return 0
-}
-
 ClipWait(L)
 {
    arg1 := lua_tostring(L, 1)
@@ -449,16 +498,6 @@ ControlSetText(L)
    arg6 := lua_tostring(L, 6)
 
    ControlSetText, %arg1%, %arg2%, %arg3%, %arg4%, %arg5%, %arg6%
-
-   return 0
-}
-
-CoordMode(L)
-{
-   arg1 := lua_tostring(L, 1)
-   arg2 := lua_tostring(L, 2)
-
-   CoordMode, %arg1%, %arg2%
 
    return 0
 }
@@ -1033,17 +1072,6 @@ PostMessage(L)
    arg8 := lua_tostring(L, 8)
 
    PostMessage, %arg1%, %arg2%, %arg3%, %arg4%, %arg5%, %arg6%, %arg7%, %arg8%
-
-   return 0
-}
-
-Process(L)
-{
-   arg1 := lua_tostring(L, 1)
-   arg2 := lua_tostring(L, 2)
-   arg3 := lua_tostring(L, 3)
-
-   Process, %arg1%, %arg2%, %arg3%
 
    return 0
 }
@@ -2009,21 +2037,6 @@ GuiControlGet(L)
    Return, 1
 }
 
-ImageSearch(L)
-{
-   x1 := lua_tostring(L, 1)
-   y1 := lua_tostring(L, 2)
-   x2 := lua_tostring(L, 3)
-   y2 := lua_tostring(L, 4)
-   ImageFile := lua_tostring(L, 5)
-
-   ImageSearch, OutputVarX, OutputVarY, %X1%, %Y1%, %X2%, %Y2%, %ImageFile%
-
-   lua_pushinteger(L, OutputVarX)
-   lua_pushinteger(L, OutputVarY)
-   Return, 2
-}
-
 IniRead(L)
 {
    Filename := lua_tostring(L, 1)
@@ -2501,15 +2514,21 @@ ahkGetVar(L)
 }
 */
 
-extern "C"
+bool lua_registerAhkfunctions(lua_State* L)
 {
-	int luaopen_cinvoke_lua(lua_State *l);
-};
+	lua_register(L, "BlockInput", lua_BlockInput);
+	lua_register(L, "CoordMode", lua_CoordMode);
+	lua_register(L, "Click", lua_Click);
+	lua_register(L, "Gui", lua_Gui);
+	lua_register(L, "Process", lua_Process);
+	lua_register(L, "Sleep", lua_Sleep);
+	lua_register(L, "WinGetPos", lua_WinGetPos);
+
+	return true;
+}
 
 ResultType RunLuaFile( LPCTSTR tszFilename )
 {
-	TCHAR tszXX[256];
-	::GetCurrentDirectory(255, tszXX);
 	CStringCharFromWChar strFilename( tszFilename );
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
@@ -2518,4 +2537,3 @@ ResultType RunLuaFile( LPCTSTR tszFilename )
 	luaL_dofile(L, strFilename);
 	return OK;
 }
-

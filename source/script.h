@@ -589,7 +589,9 @@ enum WinSetAttributes {WINSET_INVALID, WINSET_TRANSPARENT, WINSET_TRANSCOLOR, WI
 class Label; // Forward declaration so that each can use the other.
 class Line
 {
-private:
+public:
+	Line();
+
 	ResultType EvaluateCondition();
 	bool EvaluateLoopUntil(ResultType &aResult);
 	ResultType Line::PerformLoop(ExprTokenType *aResultToken, bool &aContinueMainLoop, Line *&aJumpToLine, Line *aUntil

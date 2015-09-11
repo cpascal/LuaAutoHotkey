@@ -8424,7 +8424,9 @@ Func *Script::AddFunc(LPCTSTR aFuncName, size_t aFuncNameLength, bool aIsBuiltIn
 	return the_new_func;
 }
 
-
+Line::Line()
+{
+}
 
 size_t Line::ArgIndexLength(int aArgIndex)
 // This function is similar to ArgToInt(), so maintain them together.
