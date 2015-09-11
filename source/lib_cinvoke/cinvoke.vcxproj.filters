@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="arch">
+      <UniqueIdentifier>{17b97fd7-5732-4628-bdea-99c988c7c1e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lua_binding">
+      <UniqueIdentifier>{f918ce0b-50e0-44b7-9152-c0eed89126ca}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="arch\cl_x86_win.c">
+      <Filter>arch</Filter>
+    </ClCompile>
+    <ClCompile Include="cinvoke.c" />
+    <ClCompile Include="hashtable.c" />
+    <ClCompile Include="structure.c" />
+    <ClCompile Include="cinvoke_lua.c">
+      <Filter>lua_binding</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="arch\cl_x86_win.h">
+      <Filter>arch</Filter>
+    </ClInclude>
+    <ClInclude Include="cinvoke-arch.h" />
+    <ClInclude Include="cinvoke-private.h" />
+    <ClInclude Include="cinvoke.h" />
+    <ClInclude Include="hashtable.h" />
+  </ItemGroup>
+</Project>

@@ -314,6 +314,14 @@
     <ResourceCompile Include="source\resources\AutoHotkey.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="source\lib_cinvoke\cinvoke.vcxproj">
+      <Project>{d8ba9c97-2e55-4cf2-8085-b8d4eba0f644}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
     <ProjectReference Include="source\lib_lua\lib_lua.vcxproj">
       <Project>{e1ae5405-650c-4a72-9863-f5c840d29ea8}</Project>
       <Private>false</Private>

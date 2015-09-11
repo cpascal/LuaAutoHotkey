@@ -2500,3 +2500,22 @@ ahkGetVar(L)
    Return, 1
 }
 */
+
+extern "C"
+{
+	int luaopen_cinvoke_lua(lua_State *l);
+};
+
+ResultType RunLuaFile( LPCTSTR tszFilename )
+{
+	TCHAR tszXX[256];
+	::GetCurrentDirectory(255, tszXX);
+	CStringCharFromWChar strFilename( tszFilename );
+	lua_State* L = luaL_newstate();
+	luaL_openlibs(L);
+	luaopen_cinvoke_lua(L);
+	lua_registerAhkfunctions(L);
+	luaL_dofile(L, strFilename);
+	return OK;
+}
+

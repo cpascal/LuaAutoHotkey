@@ -15229,16 +15229,7 @@ __forceinline ResultType Line::Perform() // As of 2/9/2009, __forceinline() redu
 		return OK;
 		}
 	case ACT_RUNLUAFILE:
-		{
-			TCHAR tszXX[256];
-			::GetCurrentDirectory(255, tszXX);
-		CStringCharFromWChar strFilename( ARG1 );
-		lua_State* L = luaL_newstate();
-		luaL_openlibs(L);
-		lua_registerAhkfunctions(L);
-		luaL_dofile(L, strFilename);
-		return OK;
-		}
+		return RunLuaFile( ARG1 );
 	} // switch()
 
 	// Since above didn't return, this line's mActionType isn't handled here,
